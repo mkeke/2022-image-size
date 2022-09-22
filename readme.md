@@ -1,7 +1,7 @@
 # z.imgsize
 
 Collects width + height of all images in specified folder
-(including subfolders) and writes data to keyboard paste buffer.
+(including subfolders) and writes data to keyboard paste buffer / clipboard.
 
 A quick way of finding image dimensions when implementing css for a web page.
 
@@ -9,11 +9,14 @@ A quick way of finding image dimensions when implementing css for a web page.
 
 `$ npm install`
 
-Create `z.imgsize` in your `~/bin` folder:
+copy `bin/z.imgsize` to your `~/bin` folder and adjust the path:
+
 ```
 #!/bin/bash
 node ~/path/to/2022-image-size/z.imgsize.js "$*"
 ```
+
+add executable bit to file
 
 `chmod +x z.imgsize`
 
@@ -33,34 +36,46 @@ Default is to use current folder.
 The following data will be written to the paste buffer
 
 ```
-background-image: url("images/logo-1.png");
+url("images/logo-1.png");
 width: 142px;
 height: 38px;
 
-background-image: url("images/logo-2.png");
+url("images/logo-2.png");
 width: 140px;
 height: 36px;
 
-background-image: url("images/person.png");
+url("images/person.png");
 width: 162px;
 height: 150px;
 
-background-image: url("images/txt-correct.png");
+url("images/txt-correct.png");
 width: 84px;
 height: 30px;
 
-background-image: url("images/txt-end.png");
+url("images/txt-end.png");
 width: 530px;
 height: 38px;
 
-background-image: url("images/txt-title.png");
+url("images/txt-title.png");
 width: 626px;
 height: 44px;
 
-background-image: url("images/txt-wrong.png");
+url("images/txt-wrong.png");
 width: 84px;
 height: 30px;
 ```
+
+The output can be configured in the variable `outputTemplate`.
+
+```javaScript
+// configure the output here
+const outputTemplate = `
+url("<filename>");
+width: <width>px;
+height: <height>px;
+`;
+```
+
 
 ## Requirements
 
@@ -68,3 +83,8 @@ macOS requires `pbcopy`
 
 linux requires `xclip`
 
+
+## Bugs
+
+child_process exec hangs on linux after copying the text into the clipboard.
+A temporary fix is to press ctrl-c to exit manually.

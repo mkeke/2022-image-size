@@ -4,6 +4,18 @@ const fs = require('fs');
 const os = require('os');
 const log = console.log;
 
+// configure the output here
+const outputTemplate = `
+url("<filename>");
+width: <width>px;
+height: <height>px;
+`;
+
+/*
+    param can be file or dir
+    default is current dir
+*/
+
 // script is only made for macOS (darwin) and linux
 if(!["darwin", "linux"].includes(os.platform())) {
     log(`ERROR: platform ${os.platform()} not recognised.`);
@@ -23,16 +35,24 @@ if(!["darwin", "linux"].includes(os.platform())) {
         (if not found: "pbcopy:" )
 */
 
-/*
-    param can be file or dir
-    default is current dir
-*/
+
 
 let numItems = 0;
 const filenames = collectFilenames(process.argv[2]);
 const str = getData(filenames);
+if(os.platform() === "linux") {
+    log("copying to buffer. exit with ctrl-c");
+}
 copyToBuffer(str);
 
+
+/*
+    copyToBuffer(str)
+    copy the enclosed string to the paste buffer
+
+    TODO BUGFIX: exec hangs on linux. The data is stored in pastebuffer
+    but the process hangs. Temporary fix is to tell the user to press ctrl-c
+*/
 async function copyToBuffer(str) {
     await new Promise( (resolve,reject) => {
         const cmd = {
@@ -55,21 +75,34 @@ async function copyToBuffer(str) {
     log(`Copied data to buffer.`);
 }
 
+
+/*
+    getData(filenames)
+    get dimension data for each file in the filenames array
+    each file uses the outputTemplate string
+    a combined string with all the filename data is returned
+*/
 function getData(filenames) {
     let str = "";
     for(const filename of filenames) {
         const dim = sizeOf(filename);
-        let data = [];
-        data.push(`background-image: url("${filename}");`);
-        data.push(`width: ${dim.width}px;`);
-        data.push(`height: ${dim.height}px;`);
+        str += outputTemplate
+            .replace("<filename>", filename)
+            .replace("<width>", dim.width)
+            .replace("<height>", dim.height);
         numItems++;
-
-        str += data.join("\n") + "\n\n";
     }
     return str;
 }
 
+
+/*
+    collectFilenames(entry)
+    returns array of filenames matching whitelist from entry path
+    and recursively into sub folders
+    example return value
+    ['images/logo.png', 'images/button.png', 'images/background.jpg']
+*/
 function collectFilenames(entry) {
     const filenames = [];
 

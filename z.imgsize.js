@@ -52,6 +52,8 @@ copyToBuffer(str);
 
     TODO BUGFIX: exec hangs on linux. The data is stored in pastebuffer
     but the process hangs. Temporary fix is to tell the user to press ctrl-c
+
+    TODO: do we really need to await anything? Try without promise
 */
 async function copyToBuffer(str) {
     await new Promise( (resolve,reject) => {

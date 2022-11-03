@@ -6,9 +6,8 @@ const log = console.log;
 
 // configure the output here
 const outputTemplate = `
-url("<filename>");
-width: <width>px;
-height: <height>px;
+background-image: url("<filename>");
+width: <width>px; height: <height>px;
 `;
 
 /*
